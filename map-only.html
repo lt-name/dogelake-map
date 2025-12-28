@@ -19,11 +19,20 @@
 <div id="map" style="width:100vw;height:100vh"></div>
 
 <!-- JavaScript -->
+<script src="config.js"></script>
 <script src="assets/js/map/openlayers.js"></script>
 <script src="https://cdn.staticfile.org/twitter-bootstrap/5.2.0/js/bootstrap.min.js"></script>
 <script src="https://cdn.staticfile.org/jquery/3.6.0/jquery.min.js"></script>
-<script src="http://play.dogelake.cn:29039/unmined.map.properties.js"></script>
-<script src="http://play.dogelake.cn:29039/unmined.map.regions.js"></script>
+<script>
+    // 从URL获取world参数
+    const urlParams = new URLSearchParams(window.location.search);
+    const worldParam = urlParams.get('world') || 'world';
+
+    // 动态加载unmined地图配置文件
+    const mapOnlyBackendUrl = CONFIG.mapOnlyBackend;
+    document.write('<script src="' + mapOnlyBackendUrl + '/unmined.map.properties.js?world=' + encodeURIComponent(worldParam) + '"><\/script>');
+    document.write('<script src="' + mapOnlyBackendUrl + '/unmined.map.regions.js?world=' + encodeURIComponent(worldParam) + '"><\/script>');
+</script>
 <script src="assets/js/map/custom.markers.js"></script>
 <script src="assets/js/map/openlayers-fix.js"></script>
 <script src="assets/js/map/openlayers-layerswitcher.js"></script>

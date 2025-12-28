@@ -1,5 +1,16 @@
-let tilesBackend = 'http://play.dogelake.cn:21309';
-let llseBackend = 'http://play.dogelake.cn:21309/doge';
+// 从URL获取world参数
+function getWorldFromURL() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('world') || 'world'; // 默认为'world'
+}
+
+const currentWorld = getWorldFromURL();
+
+// 从配置文件中获取后端地址
+// 优先使用mainMapBackend，如果不存在则使用mapOnlyBackend
+let tilesBackend = typeof mainMapBackendUrl !== 'undefined' ? mainMapBackendUrl :
+                   (typeof mapOnlyBackendUrl !== 'undefined' ? mapOnlyBackendUrl : CONFIG.mainMapBackend);
+let llseBackend = tilesBackend + CONFIG.llsePath;
 
 let markersLayer;
 class Unmined {
@@ -114,7 +125,7 @@ class Unmined {
                             && tileX <= maxTileX
                             && tileY <= maxTileY
                             && hasTile()) {
-                            return (tilesBackend + '/tiles/zoom.{z}/{xd}/{yd}/tile.{x}.{y}.' + options.imageFormat)
+                            return (tilesBackend + '/tiles/zoom.{z}/{xd}/{yd}/tile.{x}.{y}.' + options.imageFormat + '?world=' + encodeURIComponent(currentWorld))
                                 .replace('{z}', worldZoom)
                                 .replace('{yd}', Math.floor(tileY / 10))
                                 .replace('{xd}', Math.floor(tileX / 10))
@@ -166,7 +177,7 @@ class Unmined {
         let lastGetPlayerMarkersTime = new Date().getTime();
         const getPlayerMarkers = () => {
             $.ajax({
-                url: llseBackend + '/getPlayerMarkers',
+                url: llseBackend + '/getPlayerMarkers?world=' + encodeURIComponent(currentWorld),
                 type: 'GET',
                 dataType: 'json',
                 success: data => {
@@ -191,7 +202,7 @@ class Unmined {
 
         let placeMarkersLayer;
         $.ajax({
-            url: llseBackend + '/getPlaceMarkers',
+            url: llseBackend + '/getPlaceMarkers?world=' + encodeURIComponent(currentWorld),
             type: 'GET',
             dataType: 'json',
             success: data => {
